@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-08-09T07:46:46Z",
+  "generated_utc": "2026-08-09T10:09:17Z",
   "grid": {
     "lat_points": 19,
     "lon_points": 23,
@@ -29,7 +29,23 @@
     "precip_mm": 140.7,
     "basis": "ERA5 August climatology, 2019 to 2025",
     "n_years": 7,
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "index_score": 66
+  },
+  "anomaly_2026": {
+    "month": "2026-07",
+    "temp_c_obs": 31.1,
+    "rh_pct_obs": 63.7,
+    "precip_mm_obs": 120.6,
+    "temp_c_clim": 30.7,
+    "rh_pct_clim": 66.5,
+    "precip_mm_clim": 157.2,
+    "temp_c_anom": 0.4,
+    "rh_pct_anom": -2.8,
+    "precip_mm_anom": -36.6,
+    "precip_pct_anom": -23,
+    "index_obs": 42,
+    "index_clim": 61
   },
   "validation": {
     "method": "Seasonal concordance between ERA5 climate suitability and the documented Punjab dengue transmission season",
