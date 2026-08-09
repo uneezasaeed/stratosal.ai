@@ -81,8 +81,13 @@ SDG 3 (Good Health and Well-being) · SDG 13 (Climate Action) · One Health fram
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE).
+The **code** in this repository is licensed under the MIT Licence. See [LICENSE](LICENSE).
 
+**Data is licensed separately and is not covered by the MIT Licence.** ERA5
+climate data is provided by the Copernicus Climate Change Service and is subject
+to the Copernicus licence, which permits reuse with attribution. Dengue
+surveillance figures remain the property of their originating public health
+authorities and are reproduced here with citation for research purposes.
 ---
 
 Developed by **Uneeza Saeed**, Founder, StratoSal AI.
