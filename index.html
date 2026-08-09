@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StratoSal AI — AI-Powered Outbreak Forecasting · Punjab Pakistan</title>
+<title>StratoSal AI — Climate-Driven Outbreak Early Warning · Punjab Pakistan</title>
+<meta name="description" content="StratoSal AI turns ERA5 satellite climate data into district-level dengue outbreak early warning for Punjab, Pakistan.">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -13,14 +13,12 @@
     --teal-mid:   #1A8C6E;
     --teal-lite:  #E0F2EC;
     --navy:       #0A1F3D;
-    --gold:       #C17F24;
-    --gold-lite:  #FDF3E0;
     --slate:      #3D3D3B;
-    --slate-lt:   #F4F3F0;
     --red:        #C0392B;
     --red-dark:   #7B1515;
     --red-lite:   #FAEAEA;
     --blue:       #2471A3;
+    --blue-deep:  #1B5279;
     --blue-lite:  #EEF6FF;
     --white:      #FFFFFF;
     --text:       #1A1A18;
@@ -37,7 +35,6 @@
     line-height: 1.6;
   }
 
-  /* HEADER */
   .header {
     background: var(--teal);
     position: relative;
@@ -106,10 +103,8 @@
     font-weight: 500;
   }
 
-  /* LAYOUT */
   .container { max-width: 1160px; margin: 0 auto; padding: 36px 24px 48px; }
 
-  /* STAT CARDS */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -143,18 +138,29 @@
     letter-spacing: .04em;
   }
 
-  /* FORECAST BANNER */
-  .forecast-alert {
-    background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 100%);
+  .status-panel {
     border-radius: 16px;
     padding: 28px 32px;
     margin-bottom: 20px;
     color: white;
-    border: 1px solid #A93226;
     position: relative;
     overflow: hidden;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue-deep) 100%);
+    border: 1px solid rgba(255,255,255,0.12);
   }
-  .forecast-alert::before {
+  .status-panel.HIGH {
+    background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 100%);
+    border-color: #A93226;
+  }
+  .status-panel.MEDIUM {
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue) 100%);
+    border-color: #1B5279;
+  }
+  .status-panel.LOW {
+    background: linear-gradient(135deg, #0A4436 0%, var(--teal-mid) 100%);
+    border-color: #0A4436;
+  }
+  .status-panel::before {
     content: '';
     position: absolute;
     top: -50px; right: -50px;
@@ -162,8 +168,8 @@
     border-radius: 50%;
     background: rgba(255,255,255,0.05);
   }
-  .forecast-inner { position: relative; z-index: 1; }
-  .forecast-header {
+  .status-inner { position: relative; z-index: 1; }
+  .status-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -171,66 +177,66 @@
     gap: 16px;
     margin-bottom: 20px;
   }
-  .forecast-label {
+  .status-label {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .1em;
-    color: #F5B7B1;
+    color: rgba(255,255,255,0.72);
     margin-bottom: 8px;
   }
-  .forecast-title {
+  .status-title {
     font-family: 'DM Serif Display', serif;
     font-size: 24px;
     color: white;
     line-height: 1.15;
   }
-  .forecast-window {
+  .status-window {
     font-size: 12px;
     color: rgba(255,255,255,0.68);
     margin-top: 8px;
     font-weight: 300;
   }
-  .forecast-prob { text-align: right; flex-shrink: 0; }
-  .forecast-pct {
+  .status-right { text-align: right; flex-shrink: 0; }
+  .status-level {
     font-family: 'DM Serif Display', serif;
-    font-size: 52px;
+    font-size: 44px;
     color: white;
     line-height: 1;
+    letter-spacing: -.5px;
   }
-  .forecast-pct-label {
+  .status-level-label {
     font-size: 11px;
     color: rgba(255,255,255,0.65);
     text-transform: uppercase;
     letter-spacing: .06em;
-    margin-top: 4px;
+    margin-top: 6px;
   }
-  .forecast-grid {
+  .status-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 18px;
   }
-  .forecast-stat {
+  .status-stat {
     background: rgba(255,255,255,0.1);
     border-radius: 10px;
     padding: 12px 14px;
     border: 1px solid rgba(255,255,255,0.14);
   }
-  .forecast-stat-val { font-weight: 600; font-size: 14px; color: white; margin-bottom: 3px; }
-  .forecast-stat-lbl { font-size: 11px; color: rgba(255,255,255,0.62); line-height: 1.4; }
-  .forecast-action {
+  .status-stat-val { font-weight: 600; font-size: 14px; color: white; margin-bottom: 3px; }
+  .status-stat-lbl { font-size: 11px; color: rgba(255,255,255,0.62); line-height: 1.4; }
+  .status-action {
     background: rgba(255,255,255,0.1);
     border-radius: 10px;
     padding: 14px 18px;
-    border-left: 3px solid #F5B7B1;
+    border-left: 3px solid rgba(255,255,255,0.5);
     font-size: 13px;
     color: rgba(255,255,255,0.88);
     line-height: 1.7;
   }
-  .forecast-action strong { color: white; }
+  .status-action strong { color: white; }
 
-  /* CHART CARDS */
   .chart-card {
     background: var(--white);
     border-radius: 16px;
@@ -264,7 +270,6 @@
   }
   .chart-wrap { position: relative; height: 240px; }
 
-  /* INSIGHT BOX */
   .insight {
     background: var(--navy);
     border-radius: 16px;
@@ -288,8 +293,7 @@
   }
   .insight-text strong { color: var(--white); font-weight: 600; }
 
-  /* CHILD HEALTH BOX */
-  .child-impact {
+  .note-box {
     background: #E6F3EE;
     border: 1px solid #A8D4C2;
     border-left: 4px solid var(--teal-mid);
@@ -300,8 +304,15 @@
     gap: 16px;
     align-items: flex-start;
   }
+  .note-icon { font-size: 22px; line-height: 1; margin-top: 2px; flex-shrink: 0; }
+  .note-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--teal); margin-bottom: 6px;
+  }
+  .note-text {
+    font-size: 13px; color: var(--slate); line-height: 1.7; font-weight: 300;
+  }
 
-  /* METHODOLOGY CARD */
   .method-card {
     background: #EAF4F0;
     border: 1px solid #B8D8CC;
@@ -332,7 +343,6 @@
   }
   .method-item-val { font-size: 13px; font-weight: 500; color: var(--navy); line-height: 1.5; }
 
-  /* RISK TABLE */
   .risk-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -350,7 +360,7 @@
   }
   .risk-card:hover { transform: translateY(-1px); }
   .risk-card.HIGH   { background: #FEF5F5; border-color: #F5C5C5; }
-  .risk-card.MEDIUM { background: #FFFBF0; border-color: #F0DFA0; }
+  .risk-card.MEDIUM { background: var(--blue-lite); border-color: #BFD9EE; }
   .risk-card.LOW    { background: #F0FBF6; border-color: #A8DFC8; }
   .risk-district { font-weight: 600; font-size: 14px; color: var(--navy); }
   .risk-stats    { font-size: 11px; color: var(--muted); margin-top: 3px; }
@@ -362,10 +372,37 @@
     letter-spacing: .04em;
   }
   .risk-badge.HIGH   { background: var(--red-lite);  color: var(--red); }
-  .risk-badge.MEDIUM { background: var(--gold-lite);  color: #9A6210; }
-  .risk-badge.LOW    { background: var(--teal-lite);  color: var(--teal); }
+  .risk-badge.MEDIUM { background: #DCEBF8;          color: var(--blue-deep); }
+  .risk-badge.LOW    { background: var(--teal-lite); color: var(--teal); }
 
-  /* FOOTER */
+  .sources {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 28px;
+    margin-bottom: 20px;
+  }
+  .sources h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .sources p { font-size: 12.5px; color: var(--muted); line-height: 1.8; font-weight: 300; }
+  .sources a { color: var(--teal); text-decoration: none; border-bottom: 1px solid #BFE0D4; }
+  .sources a:hover { border-bottom-color: var(--teal); }
+
+  .loading { color: var(--muted); font-size: 13px; font-style: italic; }
+  .databar {
+    background: var(--teal-lite);
+    border: 1px solid #B8D8CC;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--teal);
+    margin-bottom: 20px;
+  }
+
   .footer {
     border-top: 1px solid var(--border);
     padding: 32px 48px;
@@ -404,33 +441,33 @@
     .stats-row { grid-template-columns: 1fr 1fr; }
     .header-meta { text-align: left; }
     .footer-founder { text-align: left; }
-    .logo-lockup h1 { font-size: 28px; }
-    .forecast-grid { grid-template-columns: 1fr; }
-    .forecast-prob { text-align: left; }
-    .forecast-pct { font-size: 40px; }
+    .logo-block h1 { font-size: 28px; }
+    .status-grid { grid-template-columns: 1fr; }
+    .status-right { text-align: left; }
+    .status-level { font-size: 36px; }
+    .method-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-inner">
     <div class="header-top">
       <div class="logo-block">
         <h1>Strato<span>Sal</span> AI</h1>
-        <div class="tagline">AI-Powered Infectious Disease Forecasting · Punjab Pakistan · 4 to 6 Week Lead Time</div>
+        <div class="tagline">Climate-Driven Outbreak Early Warning · Punjab Pakistan · 4 to 6 Week Lead Time</div>
       </div>
       <div class="header-meta">
-        <strong>ERA5 Satellite Data</strong><br>
-        19 × 23 grid points · Punjab Pakistan<br>
+        <strong>ERA5 Reanalysis · Copernicus C3S</strong><br>
+        <span id="hdr-grid">Loading grid…</span><br>
         Lat 29.5°N to 34.0°N · Lon 69.5°E to 75.0°E<br>
-        Last updated: June 2026
+        Data through: <span id="hdr-updated">…</span>
       </div>
     </div>
     <div class="badges">
-      <span class="badge">ERA5 / Copernicus Satellite Data</span>
-      <span class="badge">Interpretable AI / ML</span>
+      <span class="badge">ERA5 · Copernicus C3S / ECMWF</span>
+      <span class="badge">Interpretable Methods</span>
       <span class="badge">One Health Framework</span>
       <span class="badge">SDG 3 + SDG 13</span>
       <span class="badge">Open Source · MIT Licence</span>
@@ -439,274 +476,206 @@
   </div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div class="container">
 
-  <!-- Stats row -->
+  <div class="databar" id="databar">
+    Every figure on this page is read from <code>data/forecast.json</code> and
+    <code>data/dengue.json</code>. Nothing is entered by hand.
+  </div>
+
   <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-n">7 yrs</div>
-      <div class="stat-l">Training data 2019 to 2025</div>
+      <div class="stat-n" id="stat-months">…</div>
+      <div class="stat-l">Months of ERA5 data</div>
     </div>
     <div class="stat-card highlight">
-      <div class="stat-n">86.8%</div>
-      <div class="stat-l">AI model accuracy</div>
+      <div class="stat-n" id="stat-grid">…</div>
+      <div class="stat-l">ERA5 grid points over Punjab</div>
     </div>
     <div class="stat-card">
       <div class="stat-n">4 to 6 wk</div>
-      <div class="stat-l">Outbreak lead time</div>
+      <div class="stat-l">Target early warning lead time</div>
     </div>
     <div class="stat-card">
-      <div class="stat-n">36</div>
-      <div class="stat-l">Punjab districts in forecast scope</div>
+      <div class="stat-n" id="stat-districts">…</div>
+      <div class="stat-l">Pilot districts monitored</div>
     </div>
   </div>
 
-  <!-- CURRENT FORECAST BANNER -->
-  <div class="forecast-alert">
-    <div class="forecast-inner">
-      <div class="forecast-header">
+  <div class="status-panel" id="status-panel">
+    <div class="status-inner">
+      <div class="status-header">
         <div>
-          <div class="forecast-label">StratoSal AI · Operational Forecast Prototype · June 2026</div>
-          <div class="forecast-title">HIGH OUTBREAK RISK DETECTED</div>
-          <div class="forecast-window">
-            Forecast window: July to August 2026 · Dengue · Punjab Pakistan<br>
-            Based on ERA5 climate signals through June 2026 · Updated with each monthly ERA5 data batch
-          </div>
+          <div class="status-label" id="status-label">StratoSal AI · Climate Suitability Monitor</div>
+          <div class="status-title" id="status-title">Loading current conditions…</div>
+          <div class="status-window" id="status-window"></div>
         </div>
-        <div class="forecast-prob">
-          <div class="forecast-pct">96.8%</div>
-          <div class="forecast-pct-label">Outbreak probability</div>
+        <div class="status-right">
+          <div class="status-level" id="status-level">…</div>
+          <div class="status-level-label">Climate suitability</div>
         </div>
       </div>
-      <div class="forecast-grid">
-        <div class="forecast-stat">
-          <div class="forecast-stat-val">86.8% accuracy</div>
-          <div class="forecast-stat-lbl">5-fold cross-validated · Proof-of-concept model</div>
-        </div>
-        <div class="forecast-stat">
-          <div class="forecast-stat-val">36.2°C · 118mm · 74% RH</div>
-          <div class="forecast-stat-lbl">Aggregate ERA5 input signals · June 2026 Punjab</div>
-        </div>
-        <div class="forecast-stat">
-          <div class="forecast-stat-val">6 of 10 pilot districts: HIGH</div>
-          <div class="forecast-stat-lbl">Lahore · Rawalpindi · Gujranwala · Sialkot · Sheikhupura · Nankana Sahib</div>
-        </div>
-      </div>
-      <div class="forecast-action">
-        <strong>Recommended action for district health officers:</strong> Monsoon is now active across northern Punjab. Immediately deploy emergency fumigation to standing water sites in all HIGH-risk districts as breeding sites multiply rapidly in the first weeks of monsoon. Activate Lady Health Worker surveillance networks for household-level fever monitoring. Deploy dengue rapid diagnostic tests to primary health clinics in Lahore, Rawalpindi, Gujranwala, Sialkot, Sheikhupura, and Nankana Sahib. <strong>Children under 5 face the highest risk of severe dengue mortality during monsoon surge periods. Act before the first cases arrive.</strong>
-      </div>
+      <div class="status-grid" id="status-grid"></div>
+      <div class="status-action" id="status-action"></div>
     </div>
   </div>
 
-  <!-- Scientific foundation -->
   <div class="insight">
     <div class="insight-label">Scientific foundation</div>
     <div class="insight-text">
-      StratoSal AI applies an <strong>interpretable machine learning model</strong> trained on seven years of ERA5 satellite climate data to predict dengue outbreak risk at district level across Punjab, Pakistan, with <strong>86.8% validated accuracy</strong> and a <strong>4 to 6 week lead time</strong> before surges hit. The core predictive signal: temperature above 30°C combined with anomalous monsoon rainfall reliably precedes dengue outbreak peaks, confirmed across the <strong>catastrophic 2022 (28,000 cases) and 2025 (35,000 cases) flood seasons</strong>. This lead time is sufficient for district health officers to protect children before the first patient arrives at a clinic. Malaria and chikungunya integration is in active development.
+      StratoSal AI converts <strong>ERA5 satellite reanalysis climate data</strong> into
+      district-level dengue transmission risk across Punjab, Pakistan. Temperature in the
+      26 to 35°C band, relative humidity above 65 percent, and monsoon rainfall that leaves
+      standing water together define the conditions in which <em>Aedes aegypti</em>
+      populations expand. Because those conditions appear in the climate record weeks before
+      cases appear in clinics, they provide a <strong>4 to 6 week window</strong> in which
+      district health officers can act. The approach follows the published spatial-temporal
+      evidence linking climate to dengue spread in Pakistan.
     </div>
   </div>
 
-  <!-- Child health impact -->
-  <div class="child-impact">
-    <div style="font-size:24px;line-height:1;margin-top:2px;flex-shrink:0;">👶</div>
+  <div class="note-box">
+    <div class="note-icon">👶</div>
     <div>
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:6px;">Why children, and why this 4 to 6 week window matters</div>
-      <div style="font-size:13px;color:var(--slate);line-height:1.7;font-weight:300;">
-        Children under 5 bear the highest burden of severe dengue mortality in Punjab. During the 2022 flood season, paediatric dengue cases dominated the 28,000-case surge, the worst in Pakistan's recorded history at that time. The 4 to 6 week warning window StratoSal AI provides is specifically designed to trigger <strong>pre-emptive child health actions</strong>: ORS pre-positioning, Lady Health Worker activation for household surveillance, and bed net distribution to schools and clinics. All of these interventions are deliverable within the lead time the platform generates. Every week of early warning translates directly to lives saved.
+      <div class="note-label">Why children, and why the lead time matters</div>
+      <div class="note-text">
+        Severe dengue carries its heaviest consequences for children, who are more likely to
+        progress to plasma leakage and shock and less likely to be brought for care early.
+        The warning window StratoSal AI targets is designed to trigger <strong>pre-emptive
+        child health actions</strong>: oral rehydration salt pre-positioning, Lady Health
+        Worker activation for household fever surveillance, rapid diagnostic test distribution
+        to primary clinics, and larval source reduction around schools. Each of these is
+        deliverable inside a four week window. Warning that arrives after the first cases
+        reach hospital arrives too late to change the outcome.
       </div>
     </div>
   </div>
 
-  <!-- Why Punjab -->
-  <div style="background:#EAF4F0;border:1px solid #B8D8CC;border-left:4px solid var(--teal);border-radius:14px;padding:20px 28px;margin-bottom:20px;display:flex;gap:16px;align-items:flex-start;">
-    <div style="font-size:22px;line-height:1;margin-top:2px;flex-shrink:0;">📍</div>
+  <div class="note-box">
+    <div class="note-icon">📍</div>
     <div>
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:6px;">Why Punjab, and why now</div>
-      <div style="font-size:13px;color:var(--slate);line-height:1.7;font-weight:300;">
-        Punjab is Pakistan's most populous province, home to over 110 million people and the country's highest recorded dengue burden. It is also the geography where ERA5 satellite climate data, Pakistan NIH disease surveillance, and district-level health infrastructure are most accessible and reliable. Beginning with Punjab allows rigorous validation of the climate-disease forecasting model before expanding to Sindh, KPK, and broader South Asia. <strong>This is a deliberate beachhead, not a limitation.</strong>
+      <div class="note-label">Why Punjab, and why now</div>
+      <div class="note-text">
+        Punjab is Pakistan's most populous province and has repeatedly carried the country's
+        largest share of the national dengue burden, including roughly half of all recorded
+        national cases in the 2021 epidemic. It is also the geography where ERA5 climate data,
+        National Institute of Health surveillance reporting, and district health infrastructure
+        are most accessible together. Beginning in Punjab allows the climate-disease
+        relationship to be validated rigorously before extension to Sindh, Khyber Pakhtunkhwa,
+        and the wider region. <strong>This is a deliberate starting point, not a limitation.</strong>
       </div>
     </div>
   </div>
 
-  <!-- Temperature chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
         <div class="chart-title">Climate Signal 1 — Temperature</div>
-        <div class="chart-sub">Monthly average across Punjab Pakistan · Source: ERA5 / Copernicus ECMWF · Vector breeding threshold at 30°C</div>
+        <div class="chart-sub">Monthly mean across 437 ERA5 grid points over Punjab · Source: ERA5 / Copernicus C3S · Dashed line marks the 30°C vector activity threshold</div>
       </div>
-      <span class="chart-pill">°C · 2019 to 2026</span>
+      <span class="chart-pill" id="pill-temp">°C</span>
     </div>
     <div class="chart-wrap"><canvas id="tempChart"></canvas></div>
   </div>
 
-  <!-- Precipitation chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
         <div class="chart-title">Climate Signal 2 — Precipitation</div>
-        <div class="chart-sub">Monthly total · Anomalous spikes in 2022, 2024, and 2025 correspond to flood years · Key predictive trigger for outbreak forecasting</div>
+        <div class="chart-sub">Monthly total, converted from ERA5 mean daily rate · Monsoon peaks create the standing water that sustains breeding sites</div>
       </div>
-      <span class="chart-pill">mm · 2019 to 2026</span>
+      <span class="chart-pill" id="pill-rain">mm</span>
     </div>
     <div class="chart-wrap"><canvas id="rainChart"></canvas></div>
   </div>
 
-  <!-- Dengue chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
-        <div class="chart-title">Health Outcome — Dengue Cases Punjab</div>
-        <div class="chart-sub">Cases peak 4 to 6 weeks after climate signal anomalies · 2022 and 2025 peaks correspond to preceding ERA5 signals · Source: WHO EMRO + Pakistan NIH</div>
+        <div class="chart-title">Climate Signal 3 — Relative Humidity</div>
+        <div class="chart-sub">Derived from ERA5 2 m temperature and 2 m dewpoint using the Magnus formula · Humidity above 65 percent extends adult vector lifespan</div>
       </div>
-      <span class="chart-pill">Cases · 2019 to 2026</span>
+      <span class="chart-pill" id="pill-rh">%</span>
+    </div>
+    <div class="chart-wrap"><canvas id="rhChart"></canvas></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Health Outcome — Recorded Dengue Cases, Punjab</div>
+        <div class="chart-sub">Provincial surveillance totals · Hover any bar for the reporting date and detail · Full citations in <code>data/SOURCES.md</code></div>
+      </div>
+      <span class="chart-pill" id="pill-dengue">Cases</span>
     </div>
     <div class="chart-wrap"><canvas id="dengueChart"></canvas></div>
   </div>
 
-  <!-- Methodology card -->
   <div class="method-card">
     <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Forecasting methodology</div>
-    <div style="font-family:'DM Serif Display',serif;font-size:19px;color:var(--navy);margin-bottom:6px;">How the AI generates predictions</div>
-    <div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.6;">
-      An interpretable logistic regression classifier is trained on 84 monthly observations (2019 to 2025) and predicts HIGH vs LOWER dengue outbreak risk 4 to 6 weeks ahead. The model is designed for transparency and deployability in low-resource public health settings where explainability of decisions is critical. This is a proof-of-concept pilot model; production scaling with continuously updated ERA5 data will expand the training corpus in real time. Current validated forecasting covers dengue. Malaria and chikungunya integration is in development.
+    <div style="font-family:'DM Serif Display',serif;font-size:19px;color:var(--navy);margin-bottom:6px;">How the risk levels are produced</div>
+    <div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.6;" id="method-text">
+      Loading methodology…
     </div>
     <div class="method-grid">
       <div class="method-item">
-        <div class="method-item-label">Model type</div>
-        <div class="method-item-val">Interpretable Logistic Regression Classifier</div>
-      </div>
-      <div class="method-item">
-        <div class="method-item-label">Training data</div>
-        <div class="method-item-val">84 monthly observations · Punjab 2019 to 2025</div>
+        <div class="method-item-label">Current method</div>
+        <div class="method-item-val">Transparent climate suitability index over three ERA5 signals</div>
       </div>
       <div class="method-item">
         <div class="method-item-label">Input features</div>
-        <div class="method-item-val">Temperature · Precipitation · Humidity · Month</div>
+        <div class="method-item-val">Temperature · Precipitation · Derived relative humidity</div>
       </div>
       <div class="method-item">
-        <div class="method-item-label">Validated accuracy</div>
-        <div class="method-item-val">86.8% · 5-fold cross-validation · Pilot stage</div>
+        <div class="method-item-label">Climate record</div>
+        <div class="method-item-val" id="method-record">…</div>
+      </div>
+      <div class="method-item">
+        <div class="method-item-label">Validation</div>
+        <div class="method-item-val" id="method-validation">…</div>
       </div>
       <div class="method-item">
         <div class="method-item-label">Data sources</div>
-        <div class="method-item-val">ERA5 / Copernicus ECMWF · WHO EMRO · Pakistan NIH</div>
+        <div class="method-item-val">ERA5 / Copernicus C3S · Pakistan NIH · WHO EMRO</div>
       </div>
       <div class="method-item">
-        <div class="method-item-label">Validated disease</div>
-        <div class="method-item-val">Dengue · Malaria and chikungunya in development</div>
+        <div class="method-item-label">Target disease</div>
+        <div class="method-item-val">Dengue · Other vector and water-borne diseases in development</div>
       </div>
     </div>
   </div>
 
-  <!-- District risk table -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
-        <div class="chart-title">AI-Generated District Risk Scores · June 2026</div>
-        <div class="chart-sub">Model output for 10-district pilot · 6 HIGH-risk districts flagged for immediate action · Risk scores derived from ERA5 climate inputs · Full 36-district coverage in development</div>
+        <div class="chart-title">District Climate Suitability · <span id="dist-month">…</span></div>
+        <div class="chart-sub">Ten-district pilot · Each district takes the nearest ERA5 grid cell to its centroid · Extension to all 36 Punjab districts is in development</div>
       </div>
       <span class="chart-pill">Punjab Pakistan</span>
     </div>
-    <div class="risk-grid">
-
-      <!-- Northern Punjab belt: monsoon onset, temperature rising -->
-      <div class="risk-card HIGH">
-        <div>
-          <div class="risk-district">Lahore</div>
-          <div class="risk-stats">36.1°C · 98mm · 74% humidity</div>
-        </div>
-        <span class="risk-badge HIGH">HIGH</span>
-      </div>
-
-      <!-- Central Punjab: hotter, less rainfall, moderate risk -->
-      <div class="risk-card MEDIUM">
-        <div>
-          <div class="risk-district">Faisalabad</div>
-          <div class="risk-stats">37.2°C · 52mm · 62% humidity</div>
-        </div>
-        <span class="risk-badge MEDIUM">MEDIUM</span>
-      </div>
-
-      <!-- Southern Punjab: extreme heat, desert conditions persist -->
-      <div class="risk-card LOW">
-        <div>
-          <div class="risk-district">Multan</div>
-          <div class="risk-stats">39.1°C · 22mm · 48% humidity</div>
-        </div>
-        <span class="risk-badge LOW">LOW</span>
-      </div>
-
-      <!-- Rawalpindi: monsoon reaches Pothohar plateau, temp above threshold -->
-      <div class="risk-card HIGH">
-        <div>
-          <div class="risk-district">Rawalpindi</div>
-          <div class="risk-stats">33.8°C · 142mm · 76% humidity</div>
-        </div>
-        <span class="risk-badge HIGH">HIGH</span>
-      </div>
-
-      <!-- Gujranwala: monsoon intensifying, high humidity northern belt -->
-      <div class="risk-card HIGH">
-        <div>
-          <div class="risk-district">Gujranwala</div>
-          <div class="risk-stats">35.9°C · 112mm · 78% humidity</div>
-        </div>
-        <span class="risk-badge HIGH">HIGH</span>
-      </div>
-
-      <!-- Sialkot: highest rainfall in Punjab, Himalayan foothill moisture -->
-      <div class="risk-card HIGH">
-        <div>
-          <div class="risk-district">Sialkot</div>
-          <div class="risk-stats">34.8°C · 158mm · 82% humidity</div>
-        </div>
-        <span class="risk-badge HIGH">HIGH</span>
-      </div>
-
-      <!-- Bahawalpur: extreme desert heat suppresses vector activity -->
-      <div class="risk-card LOW">
-        <div>
-          <div class="risk-district">Bahawalpur</div>
-          <div class="risk-stats">40.2°C · 14mm · 42% humidity</div>
-        </div>
-        <span class="risk-badge LOW">LOW</span>
-      </div>
-
-      <!-- Sargodha: central belt, borderline conditions -->
-      <div class="risk-card MEDIUM">
-        <div>
-          <div class="risk-district">Sargodha</div>
-          <div class="risk-stats">36.8°C · 68mm · 66% humidity</div>
-        </div>
-        <span class="risk-badge MEDIUM">MEDIUM</span>
-      </div>
-
-      <!-- Sheikhupura: Lahore-adjacent, monsoon conditions -->
-      <div class="risk-card HIGH">
-        <div>
-          <div class="risk-district">Sheikhupura</div>
-          <div class="risk-stats">35.7°C · 105mm · 76% humidity</div>
-        </div>
-        <span class="risk-badge HIGH">HIGH</span>
-      </div>
-
-      <!-- Nankana Sahib: northern belt, full monsoon onset -->
-      <div class="risk-card HIGH">
-        <div>
-          <div class="risk-district">Nankana Sahib</div>
-          <div class="risk-stats">35.4°C · 92mm · 75% humidity</div>
-        </div>
-        <span class="risk-badge HIGH">HIGH</span>
-      </div>
-
+    <div class="risk-grid" id="risk-grid">
+      <div class="loading">Loading district conditions…</div>
     </div>
+  </div>
+
+  <div class="sources">
+    <h3>Data and reproducibility</h3>
+    <p>
+      Climate inputs are ERA5 monthly means produced by ECMWF and distributed through the
+      Copernicus Climate Change Service Climate Data Store, dataset
+      <code>reanalysis-era5-single-levels-monthly-means</code>, at 0.25° resolution over
+      29.5°N to 34.0°N and 69.5°E to 75.0°E. Relative humidity is derived from 2 m temperature
+      and 2 m dewpoint using the Magnus formula, Alduchov and Eskridge (1996).
+      Dengue surveillance figures are provincial totals reported by the National Institute of
+      Health Islamabad, WHO, and the peer-reviewed literature, with the reporting date recorded
+      for every year. Complete citations for every figure on this page are in
+      <a href="data/SOURCES.md">data/SOURCES.md</a>. The extraction notebook that generates
+      <code>data/forecast.json</code> is published in this repository.
+    </p>
   </div>
 
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
   <div class="footer-inner">
     <div>
@@ -726,167 +695,273 @@
 </div>
 
 <script>
-// DATA
-const labels_climate = [
-  "2019-01","2019-02","2019-03","2019-04","2019-05","2019-06",
-  "2019-07","2019-08","2019-09","2019-10","2019-11","2019-12",
-  "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06",
-  "2020-07","2020-08","2020-09","2020-10","2020-11","2020-12",
-  "2021-01","2021-02","2021-03","2021-04","2021-05","2021-06",
-  "2021-07","2021-08","2021-09","2021-10","2021-11","2021-12",
-  "2022-01","2022-02","2022-03","2022-04","2022-05","2022-06",
-  "2022-07","2022-08","2022-09","2022-10","2022-11","2022-12",
-  "2023-01","2023-02","2023-03","2023-04","2023-05","2023-06",
-  "2023-07","2023-08","2023-09","2023-10","2023-11","2023-12",
-  "2024-01","2024-02","2024-03","2024-04","2024-05","2024-06",
-  "2024-07","2024-08","2024-09","2024-10","2024-11","2024-12",
-  "2025-01","2025-02","2025-03","2025-04","2025-05","2025-06",
-  "2025-07","2025-08","2025-09","2025-10","2025-11","2025-12",
-  "2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"
-];
+(function () {
+  "use strict";
 
-const temps = [
-  14,17,22,29,36,39,37,35,31,24,17,13,
-  13,16,21,28,35,38,36,34,30,23,16,12,
-  13,17,23,30,36,38,35,33,29,22,15,12,
-  14,17,22,29,35,37,35,31,29,22,16,13,
-  14,18,23,30,37,39,36,34,30,23,16,13,
-  13,16,22,28,34,36,34,33,29,22,15,12,
-  14,17,22,29,35,38,36,34,30,23,16,13,
-  14,18,24,30,36,37,36
-];
+  const MONTH_NAMES = ["January","February","March","April","May","June",
+                       "July","August","September","October","November","December"];
 
-const rains = [
-  14,18,22,12,8,25,280,460,310,150,90,55,
-  12,15,18,10,5,20,250,290,220,130,80,45,
-  15,20,25,14,9,28,340,380,290,160,95,60,
-  18,22,30,16,10,35,400,540,380,200,110,65,
-  12,16,20,11,7,22,270,380,350,175,85,50,
-  14,18,24,13,8,30,350,740,470,220,100,58,
-  16,21,28,15,9,32,890,760,520,300,115,62,
-  18,24,30,18,12,118
-];
+  function prettyMonth(ym) {
+    if (!ym) return "";
+    const p = ym.split("-");
+    return MONTH_NAMES[parseInt(p[1], 10) - 1] + " " + p[0];
+  }
 
-const labels_dengue = [
-  "2019-02","2019-05","2019-08","2019-11",
-  "2020-02","2020-05","2020-08","2020-11",
-  "2021-02","2021-05","2021-08","2021-11",
-  "2022-02","2022-05","2022-08","2022-11",
-  "2023-02","2023-05","2023-08","2023-11",
-  "2024-02","2024-05","2024-08","2024-11",
-  "2025-02","2025-05","2025-08","2025-11",
-  "2026-02","2026-05"
-];
+  function el(id) { return document.getElementById(id); }
 
-const cases = [
-  120,890,8400,2100,
-  80,420,3200,1800,
-  95,780,11200,4300,
-  180,1200,28000,9800,
-  140,960,15400,5200,
-  160,1100,22000,7600,
-  200,1400,35000,12000,
-  180,950
-];
+  function fail(msg) {
+    const bar = el("databar");
+    bar.style.background = "#FAEAEA";
+    bar.style.borderColor = "#F5C5C5";
+    bar.style.color = "#7B1515";
+    bar.textContent = "Data files could not be loaded: " + msg +
+      " Confirm that data/forecast.json and data/dengue.json exist in the repository.";
+  }
 
-// CHART DEFAULTS
-Chart.defaults.font.family = "'DM Sans', sans-serif";
-Chart.defaults.font.size   = 11;
-Chart.defaults.color       = '#6B6B68';
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = "#6B6B68";
 
-// TEMPERATURE CHART
-new Chart(document.getElementById('tempChart'), {
-  type: 'line',
-  data: {
-    labels: labels_climate,
-    datasets: [
-      {
-        label: 'Avg Temperature (°C)',
-        data: temps,
-        borderColor: '#C0392B',
-        backgroundColor: 'rgba(192,57,43,0.06)',
-        borderWidth: 2.5,
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        pointHoverRadius: 4,
+  Promise.all([
+    fetch("data/forecast.json", { cache: "no-store" }).then(r => {
+      if (!r.ok) throw new Error("forecast.json returned " + r.status);
+      return r.json();
+    }),
+    fetch("data/dengue.json", { cache: "no-store" }).then(r => {
+      if (!r.ok) throw new Error("dengue.json returned " + r.status);
+      return r.json();
+    })
+  ]).then(function (res) {
+    render(res[0], res[1]);
+  }).catch(function (e) {
+    fail(e.message);
+  });
+
+  function render(f, d) {
+
+    // ERA5 stores float32, so parsed values carry noise like 31.799999237060547.
+    // Round once here so every display path downstream is clean.
+    const round1 = x => (typeof x === "number" ? Math.round(x * 10) / 10 : x);
+    const FIELDS = ["temp_c", "rh_pct", "precip_mm"];
+
+    FIELDS.forEach(k => {
+      f.latest[k]         = round1(f.latest[k]);
+      f.august_outlook[k] = round1(f.august_outlook[k]);
+      f.series[k]         = f.series[k].map(round1);
+    });
+    f.districts.forEach(dd => FIELDS.forEach(k => dd[k] = round1(dd[k])));
+
+    el("hdr-grid").textContent =
+      f.grid.lat_points + " × " + f.grid.lon_points + " grid points · 0.25° resolution";
+    el("hdr-updated").textContent = prettyMonth(f.coverage.last_month);
+
+    el("stat-months").textContent    = f.coverage.n_months;
+    el("stat-grid").textContent      = f.grid.total_points;
+    el("stat-districts").textContent = f.districts.length;
+
+    el("databar").innerHTML =
+      "Climate data covers <strong>" + prettyMonth(f.coverage.first_month) +
+      " to " + prettyMonth(f.coverage.last_month) + "</strong> (" +
+      f.coverage.n_months + " months, " + f.grid.total_points +
+      " grid points). Generated " + f.generated_utc +
+      ". Every figure below is read from the data files, not entered by hand.";
+
+    const a = f.august_outlook;
+    el("status-panel").classList.add(a.risk);
+
+    el("status-label").textContent =
+      "StratoSal AI · Climate Suitability Monitor · latest observation " +
+      prettyMonth(f.latest.month);
+    el("status-title").textContent =
+      a.risk === "HIGH"   ? "ELEVATED TRANSMISSION CONDITIONS EXPECTED" :
+      a.risk === "MEDIUM" ? "MODERATE TRANSMISSION CONDITIONS EXPECTED" :
+                            "LOW TRANSMISSION CONDITIONS EXPECTED";
+    el("status-window").innerHTML =
+      "August 2026 climatological outlook for Punjab, Pakistan · Dengue<br>" +
+      "Basis: " + a.basis + " (" + a.n_years + " Augusts). This is a climatological " +
+      "outlook of typical August conditions, not a numerical weather forecast.";
+    el("status-level").textContent = a.risk;
+
+    el("status-grid").innerHTML = [
+      statBox(a.temp_c + "°C · " + a.precip_mm + " mm · " + a.rh_pct + "% RH",
+              "Expected August conditions, province-wide mean"),
+      statBox(f.latest.temp_c + "°C · " + f.latest.precip_mm + " mm · " + f.latest.rh_pct + "% RH",
+              "Last observed month, " + prettyMonth(f.latest.month) + ", ERA5"),
+      statBox(countRisk(f.districts, "HIGH") + " of " + f.districts.length + " pilot districts at HIGH",
+              namesAtRisk(f.districts, "HIGH") || "No districts currently at HIGH suitability")
+    ].join("");
+
+    el("status-action").innerHTML =
+      "<strong>Indicated action for district health officers:</strong> " +
+      (a.risk === "HIGH"
+        ? "Conditions typical of August in Punjab fall inside the band in which Aedes populations expand. Prioritise larval source reduction at standing water sites, activate Lady Health Worker household fever surveillance, and pre-position rapid diagnostic tests and oral rehydration salts in the districts flagged below, ahead of the post-monsoon case peak."
+        : a.risk === "MEDIUM"
+        ? "Conditions are partially favourable for transmission. Maintain routine larval surveillance and confirm rapid diagnostic test stock levels in the districts flagged below."
+        : "Conditions are outside the main transmission band. Maintain baseline surveillance.") +
+      " <strong>Severe dengue falls hardest on children, and every week of warning is a week in which those actions can still be taken.</strong>";
+
+    const months = f.series.months;
+    const yearOf = ym => ym.split("-")[0];
+    const span = yearOf(months[0]) + " to " + yearOf(months[months.length - 1]);
+    el("pill-temp").textContent = "°C · " + span;
+    el("pill-rain").textContent = "mm · " + span;
+    el("pill-rh").textContent   = "% · "  + span;
+
+    const xAxis = { grid: { display: false }, ticks: { maxTicksLimit: 14, maxRotation: 0 } };
+
+    new Chart(el("tempChart"), {
+      type: "line",
+      data: {
+        labels: months,
+        datasets: [
+          { label: "Mean temperature (°C)", data: f.series.temp_c,
+            borderColor: "#C0392B", backgroundColor: "rgba(192,57,43,0.06)",
+            borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
+          { label: "Vector activity threshold (30°C)",
+            data: months.map(() => 30),
+            borderColor: "#0A1F3D", borderDash: [6, 4], borderWidth: 1.5,
+            pointRadius: 0, fill: false }
+        ]
       },
-      {
-        label: 'Vector breeding threshold (30°C)',
-        data: Array(labels_climate.length).fill(30),
-        borderColor: '#F5A623',
-        borderDash: [6,4],
-        borderWidth: 1.5,
-        pointRadius: 0,
-        fill: false,
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { position: "top", labels: { boxWidth: 12, padding: 16 } } },
+        scales: { x: xAxis,
+          y: { grid: { color: "rgba(0,0,0,0.04)" }, ticks: { callback: v => v + "°C" } } }
       }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
-    scales: {
-      x: { grid: { display: false }, ticks: { maxTicksLimit: 14, maxRotation: 0 } },
-      y: { min: 0, max: 50, grid: { color: 'rgba(0,0,0,0.04)' },
-           ticks: { callback: v => v + '°C' } }
-    }
-  }
-});
+    });
 
-// PRECIPITATION CHART
-new Chart(document.getElementById('rainChart'), {
-  type: 'bar',
-  data: {
-    labels: labels_climate,
-    datasets: [{
-      label: 'Total Precipitation (mm)',
-      data: rains,
-      backgroundColor: 'rgba(26,140,110,0.72)',
-      borderRadius: 3,
-      borderSkipped: false,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
-    scales: {
-      x: { grid: { display: false }, ticks: { maxTicksLimit: 14, maxRotation: 0 } },
-      y: { grid: { color: 'rgba(0,0,0,0.04)' },
-           ticks: { callback: v => v + 'mm' } }
-    }
-  }
-});
+    new Chart(el("rainChart"), {
+      type: "bar",
+      data: { labels: months, datasets: [{
+        label: "Monthly precipitation (mm)", data: f.series.precip_mm,
+        backgroundColor: "rgba(26,140,110,0.72)", borderRadius: 3, borderSkipped: false }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: "top", labels: { boxWidth: 12, padding: 16 } } },
+        scales: { x: xAxis,
+          y: { grid: { color: "rgba(0,0,0,0.04)" }, ticks: { callback: v => v + "mm" } } }
+      }
+    });
 
-// DENGUE CHART
-new Chart(document.getElementById('dengueChart'), {
-  type: 'bar',
-  data: {
-    labels: labels_dengue,
-    datasets: [{
-      label: 'Reported Dengue Cases (Punjab)',
-      data: cases,
-      backgroundColor: 'rgba(108,99,176,0.78)',
-      borderRadius: 4,
-      borderSkipped: false,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } },
-      tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y.toLocaleString() + ' cases' } }
-    },
-    scales: {
-      x: { grid: { display: false } },
-      y: { grid: { color: 'rgba(0,0,0,0.04)' },
-           ticks: { callback: v => v.toLocaleString() } }
+    new Chart(el("rhChart"), {
+      type: "line",
+      data: {
+        labels: months,
+        datasets: [
+          { label: "Relative humidity (%)", data: f.series.rh_pct,
+            borderColor: "#2471A3", backgroundColor: "rgba(36,113,163,0.08)",
+            borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
+          { label: "Vector survival threshold (65%)",
+            data: months.map(() => 65),
+            borderColor: "#0A1F3D", borderDash: [6, 4], borderWidth: 1.5,
+            pointRadius: 0, fill: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { position: "top", labels: { boxWidth: 12, padding: 16 } } },
+        scales: { x: xAxis,
+          y: { min: 0, max: 100, grid: { color: "rgba(0,0,0,0.04)" },
+               ticks: { callback: v => v + "%" } } }
+      }
+    });
+
+    const withCases = d.annual.filter(r => r.cases !== null);
+
+    new Chart(el("dengueChart"), {
+      type: "bar",
+      data: {
+        labels: withCases.map(r => String(r.year)),
+        datasets: [{
+          label: "Recorded dengue cases, Punjab",
+          data: withCases.map(r => r.cases),
+          backgroundColor: "rgba(11,94,74,0.78)",
+          borderRadius: 4, borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { boxWidth: 12, padding: 16 } },
+          tooltip: { callbacks: {
+            label: ctx => " " + ctx.parsed.y.toLocaleString() + " cases",
+            afterLabel: ctx => {
+              const r = withCases[ctx.dataIndex];
+              const lines = ["Reported to " + r.as_of];
+              if (r.deaths !== null && r.deaths !== undefined) lines.push(r.deaths + " deaths");
+              if (r.note) lines.push(r.note);
+              return lines;
+            }
+          } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: { color: "rgba(0,0,0,0.04)" },
+               ticks: { callback: v => v.toLocaleString() } }
+        }
+      }
+    });
+
+    const inProgress = d.annual.filter(r => r.cases === null).map(r => r.year);
+    if (inProgress.length) {
+      el("pill-dengue").textContent =
+        "Cases · " + withCases[0].year + " to " + withCases[withCases.length - 1].year +
+        " · " + inProgress.join(", ") + " season in progress";
     }
+
+    const v = f.validation;
+    el("method-text").innerHTML =
+      "District risk levels come from a transparent, rule-based climate suitability " +
+      "index over three ERA5 signals: mean temperature, monthly precipitation, and " +
+      "derived relative humidity. Thresholds follow the published <em>Aedes aegypti</em> " +
+      "transmission literature. The index is deliberately interpretable, because a " +
+      "district health officer must be able to see why a district was flagged before " +
+      "acting on it. Across " + f.coverage.n_months + " months of ERA5 data the index " +
+      "peaks in <strong>" + v.suitability_peak_month + "</strong>, ahead of Punjab's " +
+      "recorded " + v.recorded_case_peak + " case peak, giving the <strong>" +
+      v.lead_time_weeks + " week</strong> operational window. " + v.limitation;
+
+    el("method-record").textContent =
+      f.coverage.n_months + " months, " + prettyMonth(f.coverage.first_month) +
+      " to " + prettyMonth(f.coverage.last_month);
+    el("method-validation").textContent =
+      "Seasonal concordance · " + v.suitability_peak_month + " peak · " +
+      v.lead_time_weeks + " week lead";
+
+    el("dist-month").textContent = prettyMonth(f.latest.month);
+
+    const order = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+    const sorted = f.districts.slice().sort((x, y) => order[x.risk] - order[y.risk]);
+
+    el("risk-grid").innerHTML = sorted.map(r =>
+      '<div class="risk-card ' + r.risk + '">' +
+        '<div>' +
+          '<div class="risk-district">' + r.district + '</div>' +
+          '<div class="risk-stats">' + r.temp_c + '°C · ' + r.precip_mm +
+            'mm · ' + r.rh_pct + '% humidity</div>' +
+        '</div>' +
+        '<span class="risk-badge ' + r.risk + '">' + r.risk + '</span>' +
+      '</div>'
+    ).join("");
   }
-});
+
+  function statBox(val, lbl) {
+    return '<div class="status-stat">' +
+             '<div class="status-stat-val">' + val + '</div>' +
+             '<div class="status-stat-lbl">' + lbl + '</div>' +
+           '</div>';
+  }
+  function countRisk(list, level) {
+    return list.filter(r => r.risk === level).length;
+  }
+  function namesAtRisk(list, level) {
+    return list.filter(r => r.risk === level).map(r => r.district).join(" · ");
+  }
+
+})();
 </script>
 </body>
 </html>
