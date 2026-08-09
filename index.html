@@ -493,7 +493,7 @@
         </div>
         <div class="status-right">
           <div class="status-level" id="status-level">…</div>
-          <div class="status-level-label">Climate suitability</div>
+          <div class="status-level-label">Climate suitability · <span id="status-band">…</span> band</div>
         </div>
       </div>
       <div class="status-grid" id="status-grid"></div>
@@ -740,7 +740,8 @@
     el("stat-districts").textContent = f.districts.length;
 
     /* ---------- status banner ---------- */
-    const a = f.august_outlook;
+    const a  = f.august_outlook;
+    const an = f.anomaly_2026;
     el("status-panel").classList.add(a.risk);
 
     el("status-label").textContent =
@@ -751,16 +752,20 @@
       a.risk === "MEDIUM" ? "MODERATE TRANSMISSION CONDITIONS EXPECTED" :
                             "LOW TRANSMISSION CONDITIONS EXPECTED";
     el("status-window").innerHTML =
-      "August 2026 climatological outlook for Punjab, Pakistan · Dengue<br>" +
-      "Basis: " + a.basis + " (" + a.n_years + " Augusts). This is a climatological " +
-      "outlook of typical August conditions, not a numerical weather forecast.";
-    el("status-level").textContent = a.risk;
+      "August 2026 outlook · Dengue · Punjab, Pakistan<br>" +
+      "Baseline: " + a.basis + " (" + a.n_years + " Augusts), scoring " +
+      a.index_score + "% suitability. Read against observed July 2026 conditions, which ran " +
+      an.precip_pct_anom + "% on rainfall versus the same baseline. " +
+      "This is a climate suitability outlook, not a numerical weather forecast.";
+
+    el("status-level").textContent = a.index_score + "%";
+    el("status-band").textContent  = a.risk;
 
     el("status-grid").innerHTML = [
       statBox(a.temp_c + "°C · " + a.precip_mm + " mm · " + a.rh_pct + "% RH",
-              "Expected August conditions, province-wide mean"),
-      statBox(f.latest.temp_c + "°C · " + f.latest.precip_mm + " mm · " + f.latest.rh_pct + "% RH",
-              "Last observed month, " + prettyMonth(f.latest.month) + ", ERA5"),
+              "August baseline, province-wide mean across " + a.n_years + " years"),
+      statBox(an.precip_pct_anom + "% rainfall vs normal · " + an.index_obs + "% suitability",
+              "July 2026 observed, against a " + an.index_clim + "% July baseline"),
       statBox(countRisk(f.districts, "HIGH") + " of " + f.districts.length + " pilot districts at HIGH",
               namesAtRisk(f.districts, "HIGH") || "No districts currently at HIGH suitability")
     ].join("");
