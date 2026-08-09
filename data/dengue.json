@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "geography": "Punjab Province, Pakistan",
+    "series": "Reported dengue cases, provincial totals",
+    "window": "2019-2026",
+    "compiled": "2026-08-09",
+    "note": "Surveillance counts are reported cumulatively through a stated reporting date within each transmission season. The as_of field records that date for every year.",
+    "sources_file": "SOURCES.md"
+  },
+
+  "annual": [
+    {
+      "year": 2019,
+      "cases": 19021,
+      "deaths": 75,
+      "as_of": "2019-11-12",
+      "scope": "Punjab province",
+      "source_id": "S1",
+      "note": "Lahore accounted for 14145 cases, 76 percent of the provincial total."
+    },
+    {
+      "year": 2020,
+      "cases": 820,
+      "deaths": null,
+      "as_of": "2020-06-30",
+      "scope": "Punjab province, first half of year",
+      "source_id": "S2",
+      "note": "Lahore accounted for 687 cases. National total for 2020 was 3442, the lowest in the window."
+    },
+    {
+      "year": 2021,
+      "cases": 24146,
+      "deaths": 127,
+      "as_of": "2021-11-25",
+      "scope": "Punjab province",
+      "source_id": "S3",
+      "note": "49.4 percent of national cases and 69.4 percent of national deaths. Case fatality ratio 0.5 percent."
+    },
+    {
+      "year": 2022,
+      "cases": 6255,
+      "deaths": null,
+      "as_of": "2022-09-22",
+      "scope": "Punjab province",
+      "source_id": "S4",
+      "note": "29 percent of the national total at the same reporting date."
+    },
+    {
+      "year": 2023,
+      "cases": 5469,
+      "deaths": null,
+      "as_of": "2023-11-30",
+      "scope": "Punjab province, 36 districts",
+      "source_id": "S5",
+      "note": "District-level breakdown available."
+    },
+    {
+      "year": 2024,
+      "cases": 4390,
+      "deaths": 8,
+      "as_of": "2024-11-05",
+      "scope": "Punjab province",
+      "source_id": "S6",
+      "note": null
+    },
+    {
+      "year": 2025,
+      "cases": 4117,
+      "deaths": null,
+      "as_of": "2025-11-19",
+      "scope": "Punjab province",
+      "source_id": "S7",
+      "note": "Lahore accounted for 708 cases. Surge attributed to prolonged monsoon and flooding."
+    },
+    {
+      "year": 2026,
+      "cases": null,
+      "deaths": null,
+      "as_of": "2026-08-03",
+      "scope": "Punjab province, season in progress",
+      "source_id": "S8",
+      "note": "Transmission season active. 67 cases detected province-wide in a single day, 61 admitted, 36 of them in Lahore. Cumulative provincial total for 2026 is not yet published."
+    }
+  ],
+
+  "districts_2023": [
+    { "district": "Lahore",      "cases": 2130 },
+    { "district": "Rawalpindi",  "cases": 1561 },
+    { "district": "Multan",      "cases": 620  },
+    { "district": "Gujranwala",  "cases": 268  },
+    { "district": "Faisalabad",  "cases": 245  }
+  ],
+
+  "national_context": [
+    { "year": 2019, "cases": 24547, "source_id": "S9" },
+    { "year": 2020, "cases": 3442,  "source_id": "S9" },
+    { "year": 2021, "cases": 48906, "source_id": "S9" },
+    { "year": 2022, "cases": 25932, "as_of": "2022-09-27", "source_id": "S9" },
+    { "year": 2023, "cases": 21016, "source_id": "S9" },
+    { "year": 2024, "cases": 24182, "source_id": "S9" },
+    { "year": 2025, "cases": 33394, "source_id": "S9" }
+  ]
+}
