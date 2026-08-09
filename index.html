@@ -120,9 +120,6 @@
     transition: transform .2s;
   }
   .stat-card:hover { transform: translateY(-2px); }
-  .stat-card.highlight { background: var(--teal); border-color: var(--teal); }
-  .stat-card.highlight .stat-n { color: #7ECFB8; }
-  .stat-card.highlight .stat-l { color: rgba(255,255,255,0.75); }
   .stat-n {
     font-family: 'DM Serif Display', serif;
     font-size: 32px;
@@ -375,23 +372,6 @@
   .risk-badge.MEDIUM { background: #DCEBF8;          color: var(--blue-deep); }
   .risk-badge.LOW    { background: var(--teal-lite); color: var(--teal); }
 
-  .sources {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 28px;
-    margin-bottom: 20px;
-  }
-  .sources h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 17px;
-    color: var(--navy);
-    margin-bottom: 10px;
-  }
-  .sources p { font-size: 12.5px; color: var(--muted); line-height: 1.8; font-weight: 300; }
-  .sources a { color: var(--teal); text-decoration: none; border-bottom: 1px solid #BFE0D4; }
-  .sources a:hover { border-bottom-color: var(--teal); }
-
   .loading { color: var(--muted); font-size: 13px; font-style: italic; }
   .databar {
     background: var(--teal-lite);
@@ -451,6 +431,7 @@
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div class="header-inner">
     <div class="header-top">
@@ -476,19 +457,18 @@
   </div>
 </div>
 
+<!-- MAIN CONTENT -->
 <div class="container">
 
-  <div class="databar" id="databar">
-    Every figure on this page is read from <code>data/forecast.json</code> and
-    <code>data/dengue.json</code>. Nothing is entered by hand.
-  </div>
+  <div class="databar" id="databar" style="display:none"></div>
 
+  <!-- Stats row -->
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-n" id="stat-months">…</div>
       <div class="stat-l">Months of ERA5 data</div>
     </div>
-    <div class="stat-card highlight">
+    <div class="stat-card">
       <div class="stat-n" id="stat-grid">…</div>
       <div class="stat-l">ERA5 grid points over Punjab</div>
     </div>
@@ -502,6 +482,7 @@
     </div>
   </div>
 
+  <!-- STATUS BANNER -->
   <div class="status-panel" id="status-panel">
     <div class="status-inner">
       <div class="status-header">
@@ -520,9 +501,10 @@
     </div>
   </div>
 
+  <!-- Scientific foundation -->
   <div class="insight">
     <div class="insight-label">Scientific foundation</div>
-    <div class="insight-text">
+    <div class="insight-text" id="insight-text">
       StratoSal AI converts <strong>ERA5 satellite reanalysis climate data</strong> into
       district-level dengue transmission risk across Punjab, Pakistan. Temperature in the
       26 to 35°C band, relative humidity above 65 percent, and monsoon rainfall that leaves
@@ -534,6 +516,7 @@
     </div>
   </div>
 
+  <!-- Child health -->
   <div class="note-box">
     <div class="note-icon">👶</div>
     <div>
@@ -551,6 +534,7 @@
     </div>
   </div>
 
+  <!-- Why Punjab -->
   <div class="note-box">
     <div class="note-icon">📍</div>
     <div>
@@ -567,6 +551,7 @@
     </div>
   </div>
 
+  <!-- Temperature chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -578,6 +563,7 @@
     <div class="chart-wrap"><canvas id="tempChart"></canvas></div>
   </div>
 
+  <!-- Precipitation chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -589,6 +575,7 @@
     <div class="chart-wrap"><canvas id="rainChart"></canvas></div>
   </div>
 
+  <!-- Humidity chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -600,17 +587,19 @@
     <div class="chart-wrap"><canvas id="rhChart"></canvas></div>
   </div>
 
+  <!-- Dengue chart -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
         <div class="chart-title">Health Outcome — Recorded Dengue Cases, Punjab</div>
-        <div class="chart-sub">Provincial surveillance totals · Hover any bar for the reporting date and detail · Full citations in <code>data/SOURCES.md</code></div>
+        <div class="chart-sub">Provincial surveillance totals · Hover any bar for the reporting date and detail</div>
       </div>
       <span class="chart-pill" id="pill-dengue">Cases</span>
     </div>
     <div class="chart-wrap"><canvas id="dengueChart"></canvas></div>
   </div>
 
+  <!-- Methodology -->
   <div class="method-card">
     <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Forecasting methodology</div>
     <div style="font-family:'DM Serif Display',serif;font-size:19px;color:var(--navy);margin-bottom:6px;">How the risk levels are produced</div>
@@ -640,11 +629,12 @@
       </div>
       <div class="method-item">
         <div class="method-item-label">Target disease</div>
-        <div class="method-item-val">Dengue · Other vector and water-borne diseases in development</div>
+        <div class="method-item-val">Dengue in pilot · Post-pilot: malaria and chikungunya (VBD); diarrhoeal disease and typhoid (WBD)</div>
       </div>
     </div>
   </div>
 
+  <!-- District risk -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -658,30 +648,16 @@
     </div>
   </div>
 
-  <div class="sources">
-    <h3>Data and reproducibility</h3>
-    <p>
-      Climate inputs are ERA5 monthly means produced by ECMWF and distributed through the
-      Copernicus Climate Change Service Climate Data Store, dataset
-      <code>reanalysis-era5-single-levels-monthly-means</code>, at 0.25° resolution over
-      29.5°N to 34.0°N and 69.5°E to 75.0°E. Relative humidity is derived from 2 m temperature
-      and 2 m dewpoint using the Magnus formula, Alduchov and Eskridge (1996).
-      Dengue surveillance figures are provincial totals reported by the National Institute of
-      Health Islamabad, WHO, and the peer-reviewed literature, with the reporting date recorded
-      for every year. Complete citations for every figure on this page are in
-      <a href="data/SOURCES.md">data/SOURCES.md</a>. The extraction notebook that generates
-      <code>data/forecast.json</code> is published in this repository.
-    </p>
-  </div>
-
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
   <div class="footer-inner">
     <div>
       <div class="footer-brand">Strato<span style="color:var(--teal-mid)">Sal</span> AI</div>
       <div class="footer-details">
         StratoSal AI · Pakistan<br>
+        Climate data: ERA5 · Copernicus Climate Change Service / ECMWF<br>
         Open Source · MIT Licence · SDG 3 · SDG 13<br>
         © 2026 StratoSal AI
       </div>
@@ -711,11 +687,13 @@
 
   function fail(msg) {
     const bar = el("databar");
+    bar.style.display = "block";
     bar.style.background = "#FAEAEA";
     bar.style.borderColor = "#F5C5C5";
     bar.style.color = "#7B1515";
-    bar.textContent = "Data files could not be loaded: " + msg +
-      " Confirm that data/forecast.json and data/dengue.json exist in the repository.";
+    bar.textContent = "Live climate data is temporarily unavailable. Please try again shortly.";
+    // Technical detail goes to the browser console, not the page.
+    console.error("StratoSal data load failed:", msg);
   }
 
   Chart.defaults.font.family = "'DM Sans', sans-serif";
@@ -739,6 +717,7 @@
 
   function render(f, d) {
 
+    /* ---------- normalise numeric precision ---------- */
     // ERA5 stores float32, so parsed values carry noise like 31.799999237060547.
     // Round once here so every display path downstream is clean.
     const round1 = x => (typeof x === "number" ? Math.round(x * 10) / 10 : x);
@@ -751,6 +730,7 @@
     });
     f.districts.forEach(dd => FIELDS.forEach(k => dd[k] = round1(dd[k])));
 
+    /* ---------- header and stat cards ---------- */
     el("hdr-grid").textContent =
       f.grid.lat_points + " × " + f.grid.lon_points + " grid points · 0.25° resolution";
     el("hdr-updated").textContent = prettyMonth(f.coverage.last_month);
@@ -759,13 +739,7 @@
     el("stat-grid").textContent      = f.grid.total_points;
     el("stat-districts").textContent = f.districts.length;
 
-    el("databar").innerHTML =
-      "Climate data covers <strong>" + prettyMonth(f.coverage.first_month) +
-      " to " + prettyMonth(f.coverage.last_month) + "</strong> (" +
-      f.coverage.n_months + " months, " + f.grid.total_points +
-      " grid points). Generated " + f.generated_utc +
-      ". Every figure below is read from the data files, not entered by hand.";
-
+    /* ---------- status banner ---------- */
     const a = f.august_outlook;
     el("status-panel").classList.add(a.risk);
 
@@ -800,6 +774,7 @@
         : "Conditions are outside the main transmission band. Maintain baseline surveillance.") +
       " <strong>Severe dengue falls hardest on children, and every week of warning is a week in which those actions can still be taken.</strong>";
 
+    /* ---------- climate charts ---------- */
     const months = f.series.months;
     const yearOf = ym => ym.split("-")[0];
     const span = yearOf(months[0]) + " to " + yearOf(months[months.length - 1]);
@@ -869,6 +844,7 @@
       }
     });
 
+    /* ---------- dengue chart ---------- */
     const withCases = d.annual.filter(r => r.cases !== null);
 
     new Chart(el("dengueChart"), {
@@ -912,6 +888,7 @@
         " · " + inProgress.join(", ") + " season in progress";
     }
 
+    /* ---------- methodology ---------- */
     const v = f.validation;
     el("method-text").innerHTML =
       "District risk levels come from a transparent, rule-based climate suitability " +
@@ -931,6 +908,7 @@
       "Seasonal concordance · " + v.suitability_peak_month + " peak · " +
       v.lead_time_weeks + " week lead";
 
+    /* ---------- district cards ---------- */
     el("dist-month").textContent = prettyMonth(f.latest.month);
 
     const order = { HIGH: 0, MEDIUM: 1, LOW: 2 };
